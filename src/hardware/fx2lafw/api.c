@@ -117,7 +117,7 @@ static const struct fx2lafw_profile supported_fx2[] = {
 	 */
 	{ 0x04b4, 0x00f3, "Cypress", "SuperSpeed Explorer Kit", NULL,
 		"fx3lafw-cypress-fx3.fw",
-		DEV_CAPS_FX3 | DEV_CAPS_16BIT, NULL, NULL },
+		DEV_CAPS_FX3 | DEV_CAPS_32BIT, NULL, NULL },
 
 	ALL_ZERO
 };
@@ -172,6 +172,8 @@ static const uint64_t samplerates[] = {
 static const char *channel_names_logic[] = {
 	"D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7",
 	"D8", "D9", "D10", "D11", "D12", "D13", "D14", "D15",
+	"D16", "D17", "D18", "D19", "D20", "D21", "D22", "D23",
+	"D24", "D25", "D26", "D27", "D28", "D29", "D30", "D31",
 };
 
 static const char *channel_names_analog[] = {
@@ -330,7 +332,10 @@ static GSList *scan(struct sr_dev_driver *di, GSList *options)
 		devices = g_slist_append(devices, sdi);
 
 		/* Fill in channellist according to this device's profile. */
-		num_logic_channels = prof->dev_caps & DEV_CAPS_16BIT ? 16 : 8;
+		num_logic_channels =
+			prof->dev_caps & DEV_CAPS_32BIT ? 32 :
+			(prof->dev_caps & DEV_CAPS_24BIT ? 24 :
+			 (prof->dev_caps & DEV_CAPS_16BIT ? 16 : 8));
 		if (num_logic_channels > ARRAY_SIZE(channel_names_logic))
 			num_logic_channels = ARRAY_SIZE(channel_names_logic);
 		num_analog_channels = prof->dev_caps & DEV_CAPS_AX_ANALOG ? 1 : 0;
